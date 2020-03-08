@@ -14,8 +14,10 @@ namespace Students.Tests
     [TestClass]
     public class FileSourceTest
     {
-        private FileSource source;
-        private string filePath;
+        private FileSource inputSource;
+        private FileSource outputSource;
+        private string inputFilePath;
+        private string outputFilePath;
 
         public FileSourceTest()
         {
@@ -24,8 +26,10 @@ namespace Students.Tests
         [TestInitialize]
         public void Setup()
         {
-            filePath = @"input.csv";
-            source = new FileSource(filePath);
+            inputFilePath = @"input.csv";
+            inputSource = new FileSource(inputFilePath);
+            outputFilePath = @"output.csv";
+            outputSource = new FileSource(outputFilePath);
         }
 
         private TestContext testContextInstance;
@@ -69,9 +73,18 @@ namespace Students.Tests
         #endregion
 
         [TestMethod]
+        public void AddStudent()
+        {
+            Student newStudent = new Student("123", "Brandon", StudentType.University, Gender.Male, DateTime.Now.AddYears(-18), DateTime.Now, DateTime.Now);
+            outputSource.AddStudent(newStudent);
+            var test = outputSource.GetStudents();
+            Assert.AreNotEqual(0, outputSource.GetStudents(x=>x.Name == "Brandon").Count);
+        }
+
+        [TestMethod]
         public void GetStudents()
         {
-            List<Student> students = source.GetStudents();
+            List<Student> students = inputSource.GetStudents();
 
             Assert.AreEqual(11, students.Count);
         }
@@ -79,7 +92,7 @@ namespace Students.Tests
         [TestMethod]
         public void GetStudents_Condition()
         {
-            List<Student> students = source.GetStudents(s => s.Name == "Leia");
+            List<Student> students = inputSource.GetStudents(s => s.Name == "Leia");
 
             Assert.AreEqual(2, students.Count);
             Assert.AreEqual(Gender.Female, students[0].Gender);
@@ -88,7 +101,7 @@ namespace Students.Tests
         [TestMethod]
         public void GetStudents_ByStudentTypeSortedLastModified()
         {
-            List<Student> students = source.GetStudents(s => s.Type == StudentType.Kinder, x => x.LastModifiedDate);
+            List<Student> students = inputSource.GetStudents(s => s.Type == StudentType.Kinder, x => x.LastModifiedDate);
 
             Assert.AreEqual(3, students.Count);
             Assert.AreEqual("10/20/2014 2:59:34 PM", students[0].LastModifiedDate.ToString());
@@ -97,7 +110,7 @@ namespace Students.Tests
         [TestMethod]
         public void GetStudents_ByNameSorted()
         {
-            List<Student> students = source.GetStudents(s => s.Name == "Leia", x => x.Name);
+            List<Student> students = inputSource.GetStudents(s => s.Name == "Leia", x => x.Name);
 
             Assert.AreEqual(2, students.Count);
             Assert.AreEqual(Gender.Female, students[0].Gender);
@@ -109,7 +122,7 @@ namespace Students.Tests
             List<Func<Student, bool>> whereExpressions = new List<Func<Student, bool>>();
             whereExpressions.Add(s => s.Gender == Gender.Female);
             whereExpressions.Add(s => s.Type == StudentType.Elementary);
-            List<Student> students = source.GetStudents(whereExpressions, x => x.LastModifiedDate);
+            List<Student> students = inputSource.GetStudents(whereExpressions, x => x.LastModifiedDate);
 
             Assert.AreEqual(1, students.Count);
             Assert.AreEqual(Gender.Female, students[0].Gender);

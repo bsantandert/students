@@ -9,35 +9,35 @@ namespace Students.Models
     /// <summary>
     /// Organization class for students
     /// </summary>
-    public class Organization
+    public class Organization : Entity
     {
         private string _name;
 
         private string _description;
 
-        private DateTime _createdDate;
-
-        private DateTime _lastModifiedDate;
-
         private List<Student> _students;
 
-        public Organization()
+        public Organization() : base()
         {
             _students = new List<Student>();
         }
 
-        public Organization(string name, string description, DateTime createdDate, DateTime lastModifiedDate)
+        public Organization(string id, string name, string description, DateTime createdDate, DateTime lastModifiedDate)
+            : base(id, createdDate, lastModifiedDate)
         {
             Name = name;
             Description = description;
-            CreatedDate = createdDate;
-            LastModifiedDate = lastModifiedDate;
             _students = new List<Student>();
         }
 
         public List<Student> GetStudents()
         {
             return _students;
+        }
+
+        public void AssignStudents(List<Student> students)
+        {
+            _students = students;
         }
 
         public string Name
@@ -51,18 +51,5 @@ namespace Students.Models
             get { return _description; }
             set { _description = value; }
         }
-
-        public DateTime CreatedDate
-        {
-            get { return _createdDate; }
-            set { _createdDate = value; }
-        }
-
-        public DateTime LastModifiedDate
-        {
-            get { return _lastModifiedDate; }
-            set { _lastModifiedDate = value; }
-        }
-
     }
 }

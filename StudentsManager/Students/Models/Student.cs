@@ -10,7 +10,7 @@ namespace Students.Models
     /// <summary>
     /// Student class
     /// </summary>
-    public class Student
+    public class Student : Entity
     {
         private string _name;
 
@@ -20,20 +20,15 @@ namespace Students.Models
 
         private DateTime _birthDate;
 
-        private DateTime _createdDate;
+        public Student() : base() { }
 
-        private DateTime _lastModifiedDate;
-
-        public Student() { }
-
-        public Student(string name, StudentType type, Gender gender, DateTime birthDate, DateTime createdDate, DateTime lastModifiedDate)
+        public Student(string id, string name, StudentType type, Gender gender, DateTime birthDate, DateTime createdDate, DateTime lastModifiedDate) 
+            : base(id, createdDate, lastModifiedDate)
         {
             Name = name;
             Type = type;
             Gender = gender;
             BirthDate = birthDate;
-            CreatedDate = createdDate;
-            LastModifiedDate = lastModifiedDate;
         }
 
         public string Name
@@ -60,16 +55,9 @@ namespace Students.Models
             set { _birthDate = value; }
         }
 
-        public DateTime CreatedDate
+        public override string ToString()
         {
-            get { return _createdDate; }
-            set { _createdDate = value; }
-        }
-
-        public DateTime LastModifiedDate
-        {
-            get { return _lastModifiedDate; }
-            set { _lastModifiedDate = value; }
+            return $"{Type.ToString()},{Name},{Gender.ToString()[0]},{LastModifiedDate.ToString("yyyyMMddHHmmss")}";
         }
     }
 }

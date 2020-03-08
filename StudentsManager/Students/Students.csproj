@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Enums\Gender.cs" />
     <Compile Include="Enums\StudentType.cs" />
+    <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\Organization.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Parsers\StudentParser.cs" />

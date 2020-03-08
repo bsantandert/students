@@ -33,6 +33,15 @@ namespace Students.Sources
             set { _filePath = value; }
         }
 
+        public bool AddStudent(Student student)
+        {
+            using (StreamWriter writer = new StreamWriter(FilePath, true))
+            {
+                writer.WriteLine(student.ToString());
+            }
+            return true;
+        }
+
         /// <summary>
         /// Get all students
         /// </summary>
@@ -48,8 +57,8 @@ namespace Students.Sources
         /// <param name="condition"></param>
         /// <returns></returns>
         public List<Student> GetStudents(Func<Student, bool> condition)
-        {            
-            return this.LoadStudents().Where(condition).OrderByDescending(s=>s.Name).ToList();
+        {
+            return this.LoadStudents().Where(condition).OrderByDescending(s => s.Name).ToList();
         }
 
         /// <summary>
