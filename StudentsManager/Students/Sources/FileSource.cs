@@ -17,6 +17,10 @@ namespace Students.Sources
         private string _filePath;
         private StudentParser _studentParser;
 
+        /// <summary>
+        /// File Source constructor
+        /// </summary>
+        /// <param name="filePath">Path of the file with students information</param>
         public FileSource(string filePath)
         {
             FilePath = filePath;
@@ -29,16 +33,69 @@ namespace Students.Sources
             set { _filePath = value; }
         }
 
+        /// <summary>
+        /// Get all students
+        /// </summary>
+        /// <returns></returns>
         public List<Student> GetStudents()
         {
             return this.LoadStudents();
         }
 
+        /// <summary>
+        /// Get students by condition
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
         public List<Student> GetStudents(Func<Student, bool> condition)
         {            
             return this.LoadStudents().Where(condition).OrderByDescending(s=>s.Name).ToList();
         }
 
+        /// <summary>
+        /// Get students by condition and sorted
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="sort"></param>
+        /// <returns></returns>
+        public List<Student> GetStudents(Func<Student, bool> condition, Func<Student, string> sort)
+        {
+            return this.LoadStudents().Where(condition).OrderByDescending(sort).ToList();
+        }
+
+        /// <summary>
+        /// Get students by condition and sorted by date
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="sort"></param>
+        /// <returns></returns>
+        public List<Student> GetStudents(Func<Student, bool> condition, Func<Student, DateTime> sort)
+        {
+            return this.LoadStudents().Where(condition).OrderByDescending(sort).ToList();
+        }
+
+        /// <summary>
+        /// Get students by multiple conditions and sorted
+        /// </summary>
+        /// <param name="conditions"></param>
+        /// <param name="sort"></param>
+        /// <returns></returns>
+        public List<Student> GetStudents(List<Func<Student, bool>> conditions, Func<Student, DateTime> sort)
+        {
+            //TODO: there must be a better way to use multiple conditions and do not refresh the list for every condition, maybe where.where not sure about performance
+            List<Student> students = this.LoadStudents();
+            foreach (Func<Student, bool> condition in conditions)
+            {
+                students = students.Where(condition).ToList();
+            }
+
+            return students;
+        }
+
+        /// <summary>
+        /// Get all students from source file
+        /// </summary>
+        /// <returns></returns>
         private List<Student> LoadStudents()
         {
             List<Student> students = new List<Student>();

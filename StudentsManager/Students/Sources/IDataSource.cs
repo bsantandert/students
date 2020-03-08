@@ -15,5 +15,7 @@ namespace Students.Sources
         List<Student> GetStudents();
 
         List<Student> GetStudents(Func<Student, bool> condition);
+
+        List<Student> GetStudents(Func<Student, bool> condition, Func<Student, bool> sort);
     }
 }

@@ -85,5 +85,35 @@ namespace Students.Tests
             Assert.AreEqual(Gender.Female, students[0].Gender);
         }
 
+        [TestMethod]
+        public void GetStudents_ByStudentTypeSortedLastModified()
+        {
+            List<Student> students = source.GetStudents(s => s.Type == StudentType.Kinder, x => x.LastModifiedDate);
+
+            Assert.AreEqual(3, students.Count);
+            Assert.AreEqual("10/20/2014 2:59:34 PM", students[0].LastModifiedDate.ToString());
+        }
+
+        [TestMethod]
+        public void GetStudents_ByNameSorted()
+        {
+            List<Student> students = source.GetStudents(s => s.Name == "Leia", x => x.Name);
+
+            Assert.AreEqual(2, students.Count);
+            Assert.AreEqual(Gender.Female, students[0].Gender);
+        }
+
+        [TestMethod]
+        public void GetStudents_ByGenderAndTypeSortedLastModified()
+        {
+            List<Func<Student, bool>> whereExpressions = new List<Func<Student, bool>>();
+            whereExpressions.Add(s => s.Gender == Gender.Female);
+            whereExpressions.Add(s => s.Type == StudentType.Elementary);
+            List<Student> students = source.GetStudents(whereExpressions, x => x.LastModifiedDate);
+
+            Assert.AreEqual(1, students.Count);
+            Assert.AreEqual(Gender.Female, students[0].Gender);
+        }
+
     }
 }
