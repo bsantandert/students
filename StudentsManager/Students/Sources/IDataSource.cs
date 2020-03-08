@@ -13,5 +13,7 @@ namespace Students.Sources
     public interface IDataSource
     {
         List<Student> GetStudents();
+
+        List<Student> GetStudents(Func<Student, bool> condition);
     }
 }

@@ -31,6 +31,16 @@ namespace Students.Sources
 
         public List<Student> GetStudents()
         {
+            return this.LoadStudents();
+        }
+
+        public List<Student> GetStudents(Func<Student, bool> condition)
+        {            
+            return this.LoadStudents().Where(condition).OrderByDescending(s=>s.Name).ToList();
+        }
+
+        private List<Student> LoadStudents()
+        {
             List<Student> students = new List<Student>();
             using (StreamReader reader = new StreamReader(FilePath))
             {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Students.Sources;
 using Students.Models;
+using Students.Enums;
 
 namespace Students.Tests
 {
@@ -68,11 +69,21 @@ namespace Students.Tests
         #endregion
 
         [TestMethod]
-        public void LoadStudents()
+        public void GetStudents()
         {
             List<Student> students = source.GetStudents();
 
-            Assert.AreEqual(10, students.Count);
+            Assert.AreEqual(11, students.Count);
         }
+
+        [TestMethod]
+        public void GetStudents_Condition()
+        {
+            List<Student> students = source.GetStudents(s => s.Name == "Leia");
+
+            Assert.AreEqual(2, students.Count);
+            Assert.AreEqual(Gender.Female, students[0].Gender);
+        }
+
     }
 }
