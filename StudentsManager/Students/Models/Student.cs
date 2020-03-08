@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Students.Models
 {
+    /// <summary>
+    /// Student class
+    /// </summary>
     public class Student
     {
         private string _name;

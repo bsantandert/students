@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Students.Models
 {
+    /// <summary>
+    /// Organization class for students
+    /// </summary>
     public class Organization
     {
         private string _name;
