@@ -33,12 +33,51 @@ namespace Students.Sources
             set { _filePath = value; }
         }
 
+        /// <summary>
+        /// Adds a student to source file
+        /// </summary>
+        /// <param name="student"></param>
+        /// <returns></returns>
         public bool AddStudent(Student student)
         {
             using (StreamWriter writer = new StreamWriter(FilePath, true))
             {
                 writer.WriteLine(student.ToString());
             }
+            return true;
+        }
+
+        public bool DeleteStudent(string id)
+        {
+            List<Student> students = new List<Student>();
+            string newCsvFileInfo = string.Empty;
+            using (StreamReader reader = new StreamReader(FilePath))
+            {
+                while (!reader.EndOfStream)
+                {
+                    string line = reader.ReadLine();
+                    string[] values = line.Split(',');
+                    Student currentStudent = _studentParser.Parse(values);
+                    if (currentStudent.Id != id)
+                    {
+                        newCsvFileInfo += currentStudent.ToString() + "\r\n";
+                    }
+                }
+            }
+
+            using (FileStream fileStream = File.Open(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            {
+                lock (fileStream)
+                {
+                    fileStream.SetLength(0);
+                }
+            }
+
+            using (StreamWriter writer = new StreamWriter(FilePath, true))
+            {
+                writer.Write(newCsvFileInfo);
+            }
+
             return true;
         }
 

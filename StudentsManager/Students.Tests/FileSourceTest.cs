@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Students.Sources;
 using Students.Models;
 using Students.Enums;
+using System.IO;
 
 namespace Students.Tests
 {
@@ -16,7 +17,9 @@ namespace Students.Tests
     {
         private FileSource inputSource;
         private FileSource outputSource;
+        private FileSource inputDeleteSource;
         private string inputFilePath;
+        private string inputDeleteFilePath;
         private string outputFilePath;
 
         public FileSourceTest()
@@ -30,7 +33,16 @@ namespace Students.Tests
             inputSource = new FileSource(inputFilePath);
             outputFilePath = @"output.csv";
             outputSource = new FileSource(outputFilePath);
+            inputDeleteFilePath = @"inputDelete.csv";
+            inputDeleteSource = new FileSource(inputDeleteFilePath);
         }
+
+        [TestCleanup]
+        public void Clean()
+        {
+            DeleteOutputFile();
+        }
+
 
         private TestContext testContextInstance;
 
@@ -77,8 +89,16 @@ namespace Students.Tests
         {
             Student newStudent = new Student("123", "Brandon", StudentType.University, Gender.Male, DateTime.Now.AddYears(-18), DateTime.Now, DateTime.Now);
             outputSource.AddStudent(newStudent);
-            var test = outputSource.GetStudents();
-            Assert.AreNotEqual(0, outputSource.GetStudents(x=>x.Name == "Brandon").Count);
+            var testc = outputSource.GetStudents(x => x.Name == "Brandon").Count;
+            Assert.AreEqual(1, outputSource.GetStudents(x => x.Name == "Brandon").Count);
+        }
+
+
+        [TestMethod]
+        public void DeleteStudent()
+        {
+            inputDeleteSource.DeleteStudent("1");
+            Assert.AreEqual(10, inputDeleteSource.GetStudents().Count);
         }
 
         [TestMethod]
@@ -127,6 +147,15 @@ namespace Students.Tests
             Assert.AreEqual(1, students.Count);
             Assert.AreEqual(Gender.Female, students[0].Gender);
         }
+
+        private void DeleteOutputFile()
+        {
+            if(File.Exists(outputFilePath))
+            {
+                File.Delete(outputFilePath);
+            }
+        }
+
 
     }
 }
