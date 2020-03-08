@@ -29,6 +29,9 @@ namespace Students.Tests
         {
         }
 
+        /// <summary>
+        /// Initialize files configuration
+        /// </summary>
         [TestInitialize]
         public void Setup()
         {
@@ -42,6 +45,9 @@ namespace Students.Tests
             inputThreadsSource = new FileSource(inputThreadsFilePath);
         }
 
+        /// <summary>
+        /// Deletes files with students added
+        /// </summary>
         [TestCleanup]
         public void Clean()
         {
@@ -67,28 +73,6 @@ namespace Students.Tests
                 testContextInstance = value;
             }
         }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
 
         [TestMethod]
         public void AddStudent()
