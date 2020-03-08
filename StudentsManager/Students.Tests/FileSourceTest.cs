@@ -6,6 +6,7 @@ using Students.Sources;
 using Students.Models;
 using Students.Enums;
 using System.IO;
+using System.Threading;
 
 namespace Students.Tests
 {
@@ -18,9 +19,11 @@ namespace Students.Tests
         private FileSource inputSource;
         private FileSource outputSource;
         private FileSource inputDeleteSource;
+        private FileSource inputThreadsSource;
         private string inputFilePath;
-        private string inputDeleteFilePath;
+        private string inputDeleteFilePath;        
         private string outputFilePath;
+        private string inputThreadsFilePath;
 
         public FileSourceTest()
         {
@@ -35,12 +38,15 @@ namespace Students.Tests
             outputSource = new FileSource(outputFilePath);
             inputDeleteFilePath = @"inputDelete.csv";
             inputDeleteSource = new FileSource(inputDeleteFilePath);
+            inputThreadsFilePath = @"inputThreads.csv";
+            inputThreadsSource = new FileSource(inputThreadsFilePath);
         }
 
         [TestCleanup]
         public void Clean()
         {
-            DeleteOutputFile();
+            DeleteFile(outputFilePath);
+            DeleteFile(inputThreadsFilePath);
         }
 
 
@@ -118,6 +124,18 @@ namespace Students.Tests
             Assert.AreEqual(Gender.Female, students[0].Gender);
         }
 
+        /// <summary>
+        /// Made this test to check if getting properties from a query string we could send the condition
+        /// </summary>
+        [TestMethod]
+        public void GetStudents_ConditionWithOnlyString()
+        {
+            List<Student> students = inputSource.GetStudents(s => s.GetType().GetProperty("Name").GetValue(s, null).ToString() == "Leia");
+
+            Assert.AreEqual(2, students.Count);
+            Assert.AreEqual(Gender.Female, students[0].Gender);
+        }
+
         [TestMethod]
         public void GetStudents_ByStudentTypeSortedLastModified()
         {
@@ -148,14 +166,51 @@ namespace Students.Tests
             Assert.AreEqual(Gender.Female, students[0].Gender);
         }
 
-        private void DeleteOutputFile()
+        [TestMethod]
+        public void AddStudents_MultipleThreads()
         {
-            if(File.Exists(outputFilePath))
+            Thread[] threadsArray = new Thread[20];
+            int numberOfStudents = 2500;            
+
+            for (int index = 0; index < threadsArray.Length; index++)
             {
-                File.Delete(outputFilePath);
+                threadsArray[index] = new Thread(AddStudents);
+                threadsArray[index].Start(numberOfStudents);
+            }
+
+            for (int index = 0; index < threadsArray.Length; index++)
+            {
+                threadsArray[index].Join();
+            }
+
+            List<Student> students = inputThreadsSource.GetStudents();
+
+            Assert.AreEqual(50000, students.Count);
+        }
+
+        /// <summary>
+        /// Add multiple students to file
+        /// </summary>
+        /// <param name="number"></param>
+        private void AddStudents(object number)
+        {
+            int numberParameter = (int)number;
+            for (int index = 0; index < numberParameter; index++)
+            {
+                Student newStudent = new Student(index.ToString(), "Brandon", Enums.StudentType.Kinder, Enums.Gender.Male, DateTime.Now.AddYears(-18), DateTime.Now, DateTime.Now);
+                inputThreadsSource.AddStudent(newStudent);
             }
         }
 
-
+        /// <summary>
+        /// Delete output file for add schedules varification 
+        /// </summary>
+        private void DeleteFile(string filePath)
+        {
+            if(File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
     }
 }

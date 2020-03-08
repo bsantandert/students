@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Students.Sources
@@ -16,6 +17,7 @@ namespace Students.Sources
     {
         private string _filePath;
         private StudentParser _studentParser;
+        private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
 
         /// <summary>
         /// File Source constructor
@@ -40,43 +42,77 @@ namespace Students.Sources
         /// <returns></returns>
         public bool AddStudent(Student student)
         {
-            using (StreamWriter writer = new StreamWriter(FilePath, true))
+            _readWriteLock.EnterWriteLock();
+            try
             {
-                writer.WriteLine(student.ToString());
+                using (StreamWriter writer = new StreamWriter(FilePath, true))
+                {
+                    writer.WriteLine(student.ToString());
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+                // Log something here
+            }
+            finally
+            {
+                _readWriteLock.ExitWriteLock();
             }
             return true;
+
         }
 
+
+        /// <summary>
+        /// Deletes a student from file source
+        /// </summary>
+        /// <param name="id">identifier of student</param>
+        /// <returns></returns>
         public bool DeleteStudent(string id)
         {
             List<Student> students = new List<Student>();
             string newCsvFileInfo = string.Empty;
-            using (StreamReader reader = new StreamReader(FilePath))
+            _readWriteLock.EnterWriteLock();
+
+            try
             {
-                while (!reader.EndOfStream)
+                using (StreamReader reader = new StreamReader(FilePath))
                 {
-                    string line = reader.ReadLine();
-                    string[] values = line.Split(',');
-                    Student currentStudent = _studentParser.Parse(values);
-                    if (currentStudent.Id != id)
+                    while (!reader.EndOfStream)
                     {
-                        newCsvFileInfo += currentStudent.ToString() + "\r\n";
+                        string line = reader.ReadLine();
+                        string[] values = line.Split(',');
+                        Student currentStudent = _studentParser.Parse(values);
+                        if (currentStudent.Id != id)
+                        {
+                            newCsvFileInfo += currentStudent.ToString() + "\r\n";
+                        }
                     }
                 }
-            }
 
-            using (FileStream fileStream = File.Open(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-            {
-                lock (fileStream)
+                using (FileStream fileStream = File.Open(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
-                    fileStream.SetLength(0);
+                    lock (fileStream)
+                    {
+                        fileStream.SetLength(0);
+                    }
+                }
+
+                using (StreamWriter writer = new StreamWriter(FilePath, true))
+                {
+                    writer.Write(newCsvFileInfo);
                 }
             }
-
-            using (StreamWriter writer = new StreamWriter(FilePath, true))
+            catch (Exception)
             {
-                writer.Write(newCsvFileInfo);
+                // log something here
+                return false;
             }
+            finally
+            {
+                _readWriteLock.ExitWriteLock();
+            }            
 
             return true;
         }
@@ -130,7 +166,7 @@ namespace Students.Sources
         /// <returns></returns>
         public List<Student> GetStudents(List<Func<Student, bool>> conditions, Func<Student, DateTime> sort)
         {
-            //TODO: there must be a better way to use multiple conditions and do not refresh the list for every condition, maybe where.where not sure about performance
+            //TODO: there must be a better way to use multiple conditions and do not reassign the list for every condition, maybe where.where not sure about performance
             List<Student> students = this.LoadStudents();
             foreach (Func<Student, bool> condition in conditions)
             {
@@ -147,14 +183,27 @@ namespace Students.Sources
         private List<Student> LoadStudents()
         {
             List<Student> students = new List<Student>();
-            using (StreamReader reader = new StreamReader(FilePath))
+            _readWriteLock.EnterWriteLock();
+            try
             {
-                while (!reader.EndOfStream)
+                using (StreamReader reader = new StreamReader(FilePath))
                 {
-                    string line = reader.ReadLine();
-                    string[] values = line.Split(',');
-                    students.Add(_studentParser.Parse(values));
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+                        string[] values = line.Split(',');
+                        students.Add(_studentParser.Parse(values));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                // log something here
+                throw ex;
+            }
+            finally
+            {
+                _readWriteLock.ExitWriteLock();
             }
             return students;
         }
