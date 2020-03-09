@@ -4,6 +4,6 @@
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>input.csv Name=Leia</StartArguments>
+    <StartArguments>input.csv Name=Leia Type=Kinder</StartArguments>
   </PropertyGroup>
 </Project>

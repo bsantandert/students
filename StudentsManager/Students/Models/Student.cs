@@ -59,5 +59,10 @@ namespace Students.Models
         {
             return $"{Id},{Type.ToString()},{Name},{Gender.ToString()[0]},{LastModifiedDate.ToString("yyyyMMddHHmmss")}";
         }
+
+        public string Print()
+        {
+            return $"Name: {Name}, Gender: {Gender.ToString()}, Type: {Type.ToString()}, Modified date: {LastModifiedDate.ToString()}";
+        }
     }
 }

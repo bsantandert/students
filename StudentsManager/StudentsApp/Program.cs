@@ -1,5 +1,6 @@
 ﻿using Students.Models;
 using Students.Sources;
+using StudentsApp.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,57 +12,52 @@ namespace StudentsApp
 {
     class Program
     {
+        private static string APP_TITLE = "                     -- Students App --                       ";
+        private static string FILE_NOT_FOUND = "The file specified as source does not exist.";
+        private static string NO_PARAMETERS = "Please provide the app with source file path, E.g. Students.exe input.csv";
+
         static void Main(string[] args)
         {
-            Console.WriteLine("                 -- Students App --              ");
-
-            if (args.Length != 0)
+            Console.WriteLine(APP_TITLE);
+            try
             {
-                string filePath = args[0];
-                if(!File.Exists(filePath))
+                if (args.Length != 0)
                 {
-                    Console.WriteLine("The file specified as source does not exist.");
+                    string filePath = args[0];
+                    if (!File.Exists(filePath))
+                    {
+                        Console.WriteLine(FILE_NOT_FOUND);
+                    }
+                    else
+                    {
+                        Dictionary<string, string> arguments = ArgumentsHelper.GetArguments(args);
+                        List<Func<Student, bool>> conditions = QueryHelper.GetConditions(arguments);
+
+                        IDataSource source = new FileSource(filePath);
+                        List<Student> students = source.GetStudents(conditions, x => x.LastModifiedDate);
+
+                        Organization organization = new Organization("123", "Test Organization", "Organization to test app", DateTime.Now, DateTime.Now);
+                        organization.AssignStudents(students);
+
+                        foreach (Student currentStudent in organization.GetStudents())
+                        {
+                            Console.WriteLine(currentStudent.Print());
+                        }
+                    }
                 }
                 else
                 {
-                    Dictionary<string, string> arguments = GetSearchArguments(args);
-                    Organization organization = new Organization("123", "Test Organization", "Organization to test app", DateTime.Now, DateTime.Now);
-                    IDataSource source = new FileSource(filePath);
-                    List<Func<Student, bool>> conditions = new List<Func<Student, bool>>();
-                    foreach (KeyValuePair<string, string> currentArgument in arguments)
-                    {
-                        string propertyKey = currentArgument.Key;
-                        string value = currentArgument.Value;
-                        Func<Student, bool> condition = s => s.GetType().GetProperty(propertyKey).GetValue(s, null).ToString() == value;
-                        conditions.Add(condition);
-                    }
-
-                    List<Student> students = source.GetStudents(conditions, x => x.LastModifiedDate);
-
-                    foreach (Student currentStudent in students)
-                    {
-                        Console.WriteLine($"{currentStudent.Name} : {currentStudent.LastModifiedDate}");
-                    }
-                }
+                    Console.WriteLine(NO_PARAMETERS);
+                }                
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Please provide the app with source file path, E.g. Students.exe input.csv");
+                Console.WriteLine("An error ocurred white loading application.", ex);
             }
             Console.ReadKey();
         }
 
-        public static Dictionary<string, string> GetSearchArguments(string[] parameters)
-        {
-            Dictionary<string, string> parametersFound = new Dictionary<string, string>();
-            for (int i = 1; i < parameters.Length; i++)
-            {
-                string[] param = parameters[i].Split('=');
-                string propertyKey = param[0];
-                string value = param[1];
-                parametersFound.Add(propertyKey, value);
-            }
-            return parametersFound;
-        }
     }
+
 }
+
