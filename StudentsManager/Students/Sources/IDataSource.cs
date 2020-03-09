@@ -20,7 +20,7 @@ namespace Students.Sources
 
         List<Student> GetStudents(Func<Student, bool> condition);
 
-        List<Student> GetStudents(Func<Student, bool> condition, Func<Student, bool> sort);
+        List<Student> GetStudents(Func<Student, bool> condition, Func<Student, string> sort);
 
         List<Student> GetStudents(Func<Student, bool> condition, Func<Student, DateTime> sort);
 

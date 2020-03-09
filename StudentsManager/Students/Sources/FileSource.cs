@@ -13,7 +13,7 @@ namespace Students.Sources
     /// <summary>
     /// File Source, it retrieves information from files
     /// </summary>
-    public class FileSource
+    public class FileSource : IDataSource
     {
         private string _filePath;
         private StudentParser _studentParser;
@@ -172,6 +172,8 @@ namespace Students.Sources
             {
                 students = students.Where(condition).ToList();
             }
+
+            students = students.OrderByDescending(sort).ToList();
 
             return students;
         }
