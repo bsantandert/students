@@ -178,7 +178,7 @@ namespace Students.Sources
         }
 
         /// <summary>
-        /// Get all students from source file
+        /// Get all students from source file, evrything call needs to get all items, in other source type like database the query parameters can go into the query string directly
         /// </summary>
         /// <returns></returns>
         private List<Student> LoadStudents()

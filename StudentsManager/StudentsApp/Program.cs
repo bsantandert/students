@@ -30,15 +30,19 @@ namespace StudentsApp
                     }
                     else
                     {
+                        // Retrieve arguments and assign to conditions
                         Dictionary<string, string> arguments = ArgumentsHelper.GetArguments(args);
                         List<Func<Student, bool>> conditions = QueryHelper.GetConditions(arguments);
 
+                        // Select source, it could be any implementation of IDataSource E.g. DataBaseSource
                         IDataSource source = new FileSource(filePath);
                         List<Student> students = source.GetStudents(conditions, x => x.LastModifiedDate);
 
+                        // Assign data retrieved to business objects
                         Organization organization = new Organization("123", "Test Organization", "Organization to test app", DateTime.Now, DateTime.Now);
                         organization.AssignStudents(students);
 
+                        // Print students information
                         foreach (Student currentStudent in organization.GetStudents())
                         {
                             Console.WriteLine(currentStudent.Print());
