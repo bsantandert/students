@@ -50,17 +50,16 @@ namespace Students.Sources
                     writer.WriteLine(student.ToString());
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
                 // Log something here
+                throw ex;
             }
             finally
             {
                 _readWriteLock.ExitWriteLock();
             }
             return true;
-
         }
 
 
@@ -104,10 +103,10 @@ namespace Students.Sources
                     writer.Write(newCsvFileInfo);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // log something here
-                return false;
+                throw ex;
             }
             finally
             {

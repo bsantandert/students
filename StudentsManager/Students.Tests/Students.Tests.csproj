@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="FileSourceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StudentParserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="input.csv">

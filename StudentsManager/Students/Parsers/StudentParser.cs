@@ -14,7 +14,7 @@ namespace Students.Parsers
     /// </summary>
     public class StudentParser
     {
-        private static string DATE_FORMAT = "yyyyMMddHHmmss";
+        public static string DATE_FORMAT = "yyyyMMddHHmmss";
         private static string FEMALE_KEY = "F";
         private static string FEMALE_VALUE = "Female";
         private static string MALE_KEY = "M";
